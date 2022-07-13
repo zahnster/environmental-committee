@@ -1,4 +1,5 @@
-import { Box } from "@twilio-paste/core/box";
+import { Box } from "@twilio-paste/box";
+import { Text } from "@twilio-paste/text";
 import { Heading } from "@twilio-paste/heading";
 import { Droppable } from "react-beautiful-dnd";
 import { Card } from "./Card";
@@ -8,21 +9,33 @@ const Column = ({ column, tasks, innerRef }) => (
     borderWidth="borderWidth10"
     borderColor="colorBorder"
     borderStyle="solid"
-    paddingX="space40"
-    paddingTop="space40"
-    margin="space10"
+    margin="space20"
     innerRef={innerRef}
     width="320px"
-    overflow="scroll"
     display="flex"
     flexDirection="column"
   >
-    <Heading as="h3" variant="heading30">
-      {column.title}
-    </Heading>
+    <Box
+      position="sticky"
+      top="0"
+      backgroundColor="colorBackgroundBody"
+      padding="space40"
+      borderBottomStyle="solid"
+      borderBottomWidth="borderWidth10"
+      borderBottomColor="colorBorder"
+    >
+      <Text as="h3" fontSize="fontSize60" lineHeight="lineHeight60">
+        {column.title}
+      </Text>
+    </Box>
     <Droppable droppableId={column.id}>
       {(provided) => (
-        <Box {...provided.droppableProps} ref={provided.innerRef} flex="1">
+        <Box
+          {...provided.droppableProps}
+          ref={provided.innerRef}
+          flex="1"
+          padding="space40"
+        >
           {tasks.map((task, index) => (
             <Card
               key={task.id}

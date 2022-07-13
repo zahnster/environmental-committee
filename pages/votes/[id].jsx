@@ -5,69 +5,28 @@ import { Box } from "@twilio-paste/box";
 import { DragDropContext } from "react-beautiful-dnd";
 import { Column } from "../../components/Column";
 
-const exampleData = {
-  items: {
-    item1: {
-      id: "item1",
-      title: "Title 1",
-      description: "Description 1",
+export async function getServerSideProps(context) {
+  const id = context.query.id;
+  const url = process.env.SERVER_URL;
+  const res = await fetch(`${url}/api/getAirtableRecords/${id}`);
+  const data = await res.json();
+
+  return {
+    props: {
+      url,
+      data,
     },
-    item2: {
-      id: "item2",
-      title: "Title 2",
-      description: "Description 2",
-    },
-  },
-  columns: {
-    column1: {
-      id: "column1",
-      title: "Unprioritized",
-      itemIds: ["item1", "item2"],
-    },
-    column2: {
-      id: "column2",
-      title: "Highest Priority (limit to 1-2 entries)",
-      itemIds: [],
-    },
-    column3: {
-      id: "column3",
-      title: "High Priority",
-      itemIds: [],
-    },
-    column4: {
-      id: "column4",
-      title: "Medium Priority",
-      itemIds: [],
-    },
-    column5: {
-      id: "column5",
-      title: "Low Priority",
-      itemIds: [],
-    },
-    column6: {
-      id: "column6",
-      title: "Should Not Prioritize",
-      itemIds: [],
-    },
-  },
-  columnOrder: [
-    "column1",
-    "column2",
-    "column3",
-    "column4",
-    "column5",
-    "column6",
-  ],
-};
+  };
+}
 
 const IndexPage = (props) => {
   const router = useRouter();
   const { id } = router.query;
+  const { url } = props;
 
-  // todo: get real data from airtable
-  const [data, setData] = useState(exampleData);
+  const [data, setData] = useState(props.data);
 
-  const handleDragEnd = (result) => {
+  const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
 
     // return if dragged somewhere irrelevant, or order didn't change
@@ -130,6 +89,19 @@ const IndexPage = (props) => {
     };
 
     setData(newData);
+
+    // get column title
+    const rank = data.columns[destination.droppableId].title;
+
+    // send POST request to update Airtable
+    await fetch(`${url}/api/updateAirtableRecord/${id}`, {
+      method: "POST",
+      body: JSON.stringify({
+        rank,
+        id: draggableId,
+        userId: id,
+      }),
+    });
   };
 
   return (
