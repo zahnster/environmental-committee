@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Heading } from "@twilio-paste/heading";
 import { Box } from "@twilio-paste/box";
+import { Text } from "@twilio-paste/text";
 import { DragDropContext } from "react-beautiful-dnd";
 import { Column } from "../../components/Column";
 
@@ -23,7 +23,6 @@ const IndexPage = (props) => {
   const router = useRouter();
   const { id } = router.query;
   const { url } = props;
-
   const [data, setData] = useState(props.data);
 
   const handleDragEnd = async (result) => {
@@ -106,14 +105,26 @@ const IndexPage = (props) => {
 
   return (
     <>
-      <Heading as="h1" variant="heading10">
-        West St. Paul Environmental Committee
-      </Heading>
-      <Heading as="h2" variant="heading20">
-        Voting Prioritization Card for {id}
-      </Heading>
+      <Box backgroundColor="colorBackgroundBrand" padding="space40">
+        <Text
+          as="h1"
+          fontSize="fontSize100"
+          color="colorTextBrandInverse"
+          padding="space40"
+        >
+          West St. Paul Environmental Committee
+        </Text>
+        <Text
+          as="h2"
+          fontSize="fontSize60"
+          color="colorTextBrandInverse"
+          padding="space40"
+        >
+          Voting Prioritization Card for {id}
+        </Text>
+      </Box>
 
-      <Box display="flex">
+      <Box display="flex" padding="space40">
         <DragDropContext onDragEnd={handleDragEnd}>
           {data.columnOrder.map((columnId) => {
             const column = data.columns[columnId];

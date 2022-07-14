@@ -15,13 +15,15 @@ const Card = ({ id, index, title, description }) => {
     <Draggable draggableId={id} index={index}>
       {(provided) => (
         <Box
-          backgroundColor="colorBackgroundBody"
+          backgroundColor="card"
           borderWidth="borderWidth10"
           borderColor="colorBorder"
           borderStyle="solid"
+          borderRadius="borderRadius20"
           padding="space40"
           marginBottom="space40"
           wordBreak="break-word"
+          // boxShadow="shadowCard"
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}

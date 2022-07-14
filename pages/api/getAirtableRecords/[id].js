@@ -1,6 +1,8 @@
 import { table } from "../../../util/Airtable";
 
 export default async (req, res) => {
+  const id = req.query.id;
+
   const columnRanks = [
     {
       id: "unranked",
@@ -43,7 +45,7 @@ export default async (req, res) => {
           "Notes",
           "Attachments",
           "Parks & Rec Overlap",
-          "Rank - Jade",
+          `Rank - ${id}`,
         ],
       })
       .firstPage();
@@ -67,12 +69,18 @@ export default async (req, res) => {
         description: entry.fields.Notes,
       };
 
-      // populate columns
-      if (entry.fields[`Rank - ${req.query.id}`] !== undefined) {
-        const fieldLabel = entry.fields[`Rank - ${req.query.id}`];
-        const fieldId = columnRanks.find((col) => col.title === fieldLabel).id;
-        records.columns[fieldId].itemIds.push(entry.id);
-      } else {
+      // populate columns - ranked entries get populated accordingly
+      if (entry.fields[`Rank - ${id}`]) {
+        const fieldLabel = entry.fields[`Rank - ${id}`];
+        const foundField = columnRanks.find((col) => col.title === fieldLabel);
+
+        if (foundField) {
+          const fieldId = foundField.id;
+          records.columns[fieldId].itemIds.push(entry.id);
+        }
+      }
+      // no field match - put in unranked col
+      else {
         records.columns.unranked.itemIds.push(entry.id);
       }
     });
