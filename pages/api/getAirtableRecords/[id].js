@@ -67,6 +67,7 @@ export default async (req, res) => {
         id: entry.id,
         title: entry.fields.Name,
         description: entry.fields.Notes,
+        parOverlap: entry.fields["Parks & Rec Overlap"],
       };
 
       // populate columns - ranked entries get populated accordingly

@@ -160,7 +160,7 @@ const IndexPage = (props) => {
           color="colorTextBrandInverse"
           padding="space40"
         >
-          Voting Prioritization Card for {id}
+          Initiative Prioritization Sorting for {id}
         </Text>
       </Box>
 

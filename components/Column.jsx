@@ -27,15 +27,18 @@ const Column = ({ column, tasks }) => {
             padding="space40"
             backgroundColor={`${column.id}Weak`}
           >
-            {tasks.map((task, index) => (
-              <Card
-                key={task.id}
-                id={task.id}
-                index={index}
-                title={task.title}
-                description={task.description}
-              />
-            ))}
+            {tasks.map((task, index) => {
+              return (
+                <Card
+                  key={task.id}
+                  index={index}
+                  id={task.id}
+                  title={task.title}
+                  description={task.description}
+                  parOverlap={task.parOverlap}
+                />
+              );
+            })}
             {provided.placeholder}
           </Box>
         )}
