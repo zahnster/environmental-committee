@@ -3,23 +3,14 @@ import { Text } from "@twilio-paste/text";
 import { Droppable } from "react-beautiful-dnd";
 import { Card } from "./Card";
 
-const Column = ({ column, tasks, innerRef }) => {
+const Column = ({ column, tasks }) => {
   return (
-    <Box
-      margin="space20"
-      innerRef={innerRef}
-      width="320px"
-      display="flex"
-      flexDirection="column"
-    >
+    <Box margin="space20" width="320px" display="flex" flexDirection="column">
       <Box
         position="sticky"
         top="0"
         backgroundColor={column.id}
         padding="space40"
-        // borderWidth="borderWidth10"
-        // borderColor={column.id}
-        // borderStyle="solid"
         borderTopLeftRadius="borderRadius20"
         borderTopRightRadius="borderRadius20"
       >
@@ -35,10 +26,6 @@ const Column = ({ column, tasks, innerRef }) => {
             flex="1"
             padding="space40"
             backgroundColor={`${column.id}Weak`}
-            // borderWidth="borderWidth10"
-            // borderTopWidth="borderWidth0"
-            // borderColor={column.id}
-            // borderStyle="solid"
           >
             {tasks.map((task, index) => (
               <Card
