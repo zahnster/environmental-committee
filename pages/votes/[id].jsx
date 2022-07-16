@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Box } from "@twilio-paste/box";
+import { Button } from "@twilio-paste/button";
+import { HelpText } from "@twilio-paste/help-text";
+import { Input } from "@twilio-paste/input";
+import { Label } from "@twilio-paste/label";
 import { Text } from "@twilio-paste/text";
 import { DragDropContext } from "react-beautiful-dnd";
 import { Column } from "../../components/Column";
@@ -24,6 +28,9 @@ const IndexPage = (props) => {
   const { id } = router.query;
   const { url } = props;
   const [data, setData] = useState(props.data);
+  const [auth, setAuth] = useState(false);
+  const [pass, setPass] = useState("");
+  const [showError, setShowError] = useState(false);
 
   const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
@@ -103,6 +110,39 @@ const IndexPage = (props) => {
     });
   };
 
+  // check auth on hydration
+  useEffect(() => {
+    const loggedInUser = window.localStorage.getItem(`username_${id}`);
+
+    if (loggedInUser) {
+      setAuth(loggedInUser);
+    }
+  }, [auth]);
+
+  const updateInput = (e) => {
+    setPass(e.target.value);
+    setShowError(false);
+  };
+
+  const handleAuth = async () => {
+    const authAttempt = await fetch(`${url}/api/auth`, {
+      method: "POST",
+      body: JSON.stringify({
+        username: id,
+        password: pass,
+      }),
+    });
+
+    const { authorized } = await authAttempt.json();
+
+    if (authorized) {
+      setAuth(authorized);
+      window.localStorage.setItem(`username_${id}`, authorized);
+    } else {
+      setShowError(true);
+    }
+  };
+
   return (
     <>
       <Box backgroundColor="colorBackgroundBrand" padding="space40">
@@ -124,16 +164,58 @@ const IndexPage = (props) => {
         </Text>
       </Box>
 
-      <Box display="flex" padding="space40">
-        <DragDropContext onDragEnd={handleDragEnd}>
-          {data.columnOrder.map((columnId) => {
-            const column = data.columns[columnId];
-            const tasks = column.itemIds.map((itemId) => data.items[itemId]);
+      {auth ? (
+        <Box display="flex" padding="space40">
+          <DragDropContext onDragEnd={handleDragEnd}>
+            {data.columnOrder.map((columnId) => {
+              const column = data.columns[columnId];
+              const tasks = column.itemIds.map((itemId) => data.items[itemId]);
 
-            return <Column key={column.id} column={column} tasks={tasks} />;
-          })}
-        </DragDropContext>
-      </Box>
+              return <Column key={column.id} column={column} tasks={tasks} />;
+            })}
+          </DragDropContext>
+        </Box>
+      ) : (
+        <Box
+          margin="0 auto"
+          paddingX="space40"
+          paddingY="space100"
+          width="size50"
+        >
+          <Text as="p" marginBottom="space40">
+            Hi {id}. Please enter your password to vote on our priorities!
+          </Text>
+
+          <Box as="form">
+            <Box marginBottom="space60">
+              <Label htmlFor="password">Password:</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                value={pass}
+                onChange={updateInput}
+                aria-describedby="password_help_text"
+              />
+              {showError ? (
+                <HelpText id="password_help_text" variant="error">
+                  The password you tried is incorrect. Try again?
+                </HelpText>
+              ) : null}
+            </Box>
+
+            <Button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                handleAuth();
+              }}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Box>
+      )}
     </>
   );
 };
